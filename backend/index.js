@@ -3,15 +3,23 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 
-const OpenAI = require('openai');
+const { OpenAI } = require('openai');
+const cors = require('cors'); // Import CORS library
 
 const PORT = process.env.PORT || 3000;
 
 // Set up OpenAI API configuration
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+let openai;
+try {
+    openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+} catch (error) {
+    console.error("Error configuring OpenAI API:", error);
+}
 
+// Enable CORS for all routes
+app.use(cors());
 app.use(express.json());
 
 // Store for brand voice profile data
@@ -84,41 +92,30 @@ app.post('/create-brand-voice', (req, res) => {
     }
 });
 
-// Endpoint to generate a blog draft using the stored brand voice profile
-app.post('/generate-blog', async (req, res) => {
+// Updated /generate-outline endpoint to generate an outline without requiring a brand voice profile
+app.post('/generate-outline', async (req, res) => {
     const { topic } = req.body;
 
+    if (!topic) {
+        return res.status(400).json({ error: "Topic is required." });
+    }
+
     try {
-        // Ensure that the brand voice profile exists before generating the blog
-        if (!brandVoiceProfile) {
-            return res.status(400).json({ error: "Brand voice profile not found. Please create the brand voice profile first." });
-        }
+        // Create a prompt to generate the blog outline based on the provided topic
+        const prompt = `Create a detailed blog outline on the topic of "${topic}". The outline should include multiple sections, subsections, and points to cover the topic thoroughly. Structure it using Roman numerals (I, II, III, etc.) for main sections, capital letters (A, B, C, etc.) for subsections, and numbers (1, 2, 3, etc.) for finer details.`;
 
-        // Incorporate the stored brand voice profile into the prompt
-        const prompt = `
-        Use the following brand voice profile when generating content:
-        Brand Personality: ${brandVoiceProfile.brandPersonality}
-        Tone of Voice: ${brandVoiceProfile.toneOfVoice}
-        Point of View: ${brandVoiceProfile.pointOfView}
-        Key Messaging Points: ${brandVoiceProfile.keyMessagingPoints}
-        Target Audience: ${brandVoiceProfile.targetAudience}
-        Specific Language or Jargon: ${brandVoiceProfile.specificLanguage}
-
-        Now, create a detailed outline for a blog post about "${topic}" using the above brand voice context.
-        `;
-
-        const response = await openai.chat.completions.create({
+        const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
-            messages: [{ role: "system", content: "You are a helpful assistant." }, { role: "user", content: prompt }],
-            max_tokens: 500,
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 300,
             temperature: 0.7,
         });
 
-        const outline = response.choices[0].message.content.trim();
+        const outline = completion.choices[0].message.content.trim();
         res.status(200).json({ outline });
     } catch (error) {
-        console.error("Error generating blog content:", error);
-        res.status(500).json({ error: "An error occurred while generating the blog content" });
+        console.error("Error generating outline:", error);
+        res.status(500).json({ error: "An error occurred while generating the outline" });
     }
 });
 
