@@ -1,12 +1,18 @@
 import React from 'react';
-import ChatInterface from './ChatInterface';
+import './App.css';
+import './index.css'; // Ensure the updated CSS is referenced
+import WizardUI from './WizardUI'; // Import the WizardUI component
 
 function App() {
   return (
     <div className="App">
-      <h1>AI Blog Post Generator</h1>
-      <p className="description">Create your brand voice profile and generate a blog post with AI, all through a chat-based interface.</p>
-      <ChatInterface />
+      <header className="App-header">
+        <h1>Welcome to the AI Blog Post Writer</h1>
+        <p className="description">
+          This tool will guide you through keyword selection, outline creation, and drafting an AI-powered blog post.
+        </p>
+      </header>
+      <WizardUI /> {/* Include the wizard interface */}
     </div>
   );
 }

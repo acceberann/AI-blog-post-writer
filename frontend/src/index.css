@@ -19,141 +19,133 @@ h1 {
 .description {
   color: #a0a0a0; /* Description text color */
   font-family: 'Lato', sans-serif; /* Description font */
-  text-align: center; /* Center the description */
-  margin-bottom: 32px; /* Margin below the description */
+  text-align: left; /* Center the description */
+  padding: 32px; 
+  max-width: 800px;
 }
 
-/* Chat Container Styles */
-.chat-container {
+/* Wizard Container Styles */
+.wizard-container {
   width: 80%;
-  max-width: 600px;
-  height: 500px;
-  margin: 0 auto; /* Center the chat container */
+  max-width: 800px;
+  margin: 0 auto; /* Center the wizard container */
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  overflow-y: auto;
+  padding: 32px;
+  background-color: #222222; /* Darker background for container */
+  border-radius: 8px; /* Rounded corners */
+  text-align: left; /* Left justify content */
 }
 
-/* Messages Container */
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* Chat Input Styles */
-.chat-input {
-  display: flex;
-  padding: 10px;
-  background-color: transparent; /* No background color for chat input */
-  border: none; /* Remove border */
-  margin-top: 15px;
-}
-
-.chat-input input {
+/* Input Box Styles */
+.input-box {
   background-color: #111111;
-  color: #fff;
-  flex: 1;
+  color: #ffffff;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px; /* Rounded corners on chat input */
-  font-size: 16px; /* Larger font size */
+  border-radius: 8px; /* Rounded corners on input */
+  font-size: 16px;
   font-family: 'Lato', sans-serif;
+  margin-bottom: 20px;
 }
 
-.chat-input button {
-  padding: 15px 30px; /* Increased padding for a wider button */
+/* Button Styles */
+.button {
+  padding: 15px 30px; /* Padding for a wider button */
   background-color: #8532fc; /* Button color */
   color: white;
   border: none;
   border-radius: 8px; /* Rounded corners on button */
   cursor: pointer;
-  font-size: 18px; /* Larger font size for button text */
+  font-size: 18px;
+  font-family: 'Lato', sans-serif;
+  margin-left: 10px; /* Margin to add spacing between elements */
+}
+
+.button:hover {
+  background-color: #842ee8; /* Hover color for button */
+}
+
+/* Navigation Styles */
+.nav-button {
+  padding: 10px 20px;
+  background-color: #333333;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+  margin: 10px 5px;
+}
+
+.nav-button:hover {
+  background-color: #555555;
+}
+
+/* Progress Indicator Styles */
+.progress-indicator {
+  color: #a0a0a0;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Styling for Error Messages */
+.error-message {
+  color: #ff4d4d;
+  font-size: 14px;
+  font-family: 'Lato', sans-serif;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Header Styles */
+.app-header {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #222222;
+  color: #ffffff;
+  font-family: 'Raleway', sans-serif;
+  font-size: 28px;
+  border-bottom: 1px solid #444444;
+}
+
+/* General Container Styles */
+.general-container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #222222;
+  border-radius: 10px;
+  max-width: 800px;
+}
+
+/* Next Button Styles */
+.next-button {
+  background-color: #8532fc;
+  color: #ffffff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
   font-family: 'Lato', sans-serif;
   margin-left: 10px;
 }
 
-.chat-input button:hover {
-  background-color: #842ee8; /* Hover color for button */
+.next-button:hover {
+  background-color: #842ee8;
 }
 
-/* Override styles for the chat bubbles */
-.rce-mbox {
-  background: #111111 !important; /* Set background color to match the app background */
-  border-radius: 8px !important; /* Increase border radius */
-  box-shadow: none !important; /* Remove box shadow */
-  color: #a0a0a0 !important; /* Light gray text color for readability */
-  font-family: 'Lato', sans-serif !important; /* Lato font */
-  font-size: 18px !important; /* Set the font size to 18px for readability */
-  padding: 10px 15px !important; /* Adjust padding for consistency */
-  margin: 5px 10px 20px 10px !important; /* Increased bottom margin for better spacing */
-}
-
-/* Specific styling for the chat bubble from the app's response */
-.rce-mbox-left {
-  background: #111111 !important; /* Background color to match app's background */
-  color: #a0a0a0 !important; /* Light gray text color for readability */
-  border-radius: 8px !important; /* General rounded corners */
-  border-top-left-radius: 0 !important; /* Remove upper left radius */
-}
-
-/* Styling for the right chat bubble (user messages) */
-.rce-mbox-right {
-  background: #333333 !important; /* Darker background color to complement #111111 */
-  color: #ffffff !important; /* White text color for contrast */
-  border-top-left-radius: 8px !important; /* Rounded corner on the top left */
-  border-bottom-left-radius: 8px !important; /* Rounded corner on the bottom left */
-  border-bottom-right-radius: 8px !important; /* Rounded corner on the bottom right */
-  border-top-right-radius: 0 !important; /* Remove the top-right corner radius */
-}
-
-/* Remove the left notch from the left chat bubble */
-.rce-mbox-left-notch {
-  display: none !important; /* Hide the notch entirely */
-}
-
-/* Update notch styling to match the bubble for right chat bubble */
-.rce-mbox-right-notch {
-  fill: #333333 !important; /* Match the darker bubble background color for user input */
-  height: 15px;
-  right: -14px;
-  position: absolute;
-  top: 0;
-  width: 15px;
-}
-
-/* Text inside the chat bubble */
-.rce-mbox-text {
-  font-size: 18px !important; /* Set the font size to 18px for readability */
-  word-break: break-word; /* Ensure text breaks correctly within the bubble */
-  font-family: 'Lato', sans-serif !important; /* Use Lato font for consistency */
-  color: #a0a0a0 !important; /* Light gray text color for readability */
-  margin: 0; /* Reset margin to ensure proper spacing */
-  padding: 0; /* Reset padding to prevent extra space */
-}
-
-/* Style the time inside the chat bubbles */
-.rce-mbox-time {
-  align-items: center;
-  bottom: -5px; /* Position adjustment */
-  color: #666666 !important; /* Light gray color for readability */
-  display: flex;
-  font-size: 12px !important; /* Set the font size for the timestamp */
-  justify-content: flex-end;
-  right: -4px; /* Position adjustment */
-  text-align: right;
-  -webkit-user-select: none; /* Prevent text selection */
-  user-select: none; /* Prevent text selection */
-  font-family: 'Lato', sans-serif !important; /* Use Lato font for consistency */
-  margin-top: 5px !important; /* Add some spacing above the timestamp */
-}
-
-/* CSS to ensure the initial message is left-aligned */
-.initial-message {
-  text-align: left !important; /* Force left alignment */
-}
-
-/* Ensure the initial message is left-aligned */
-.initial-message-container {
-  text-align: left !important;
+/* Updated Input Box Styles for the Keyword Input */
+.keyword-input {
+  background-color: #111111;
+  color: #ffffff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Rounded corners on input */
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 20px;
+  margin-top: 16px;
 }
