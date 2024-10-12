@@ -107,7 +107,7 @@ app.post('/generate-outline', async (req, res) => {
         const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 300,
+            max_tokens: 1500,
             temperature: 0.7,
         });
 
@@ -116,6 +116,32 @@ app.post('/generate-outline', async (req, res) => {
     } catch (error) {
         console.error("Error generating outline:", error);
         res.status(500).json({ error: "An error occurred while generating the outline" });
+    }
+});
+
+app.post('/generate-draft', async (req, res) => {
+    const { outline } = req.body;
+
+    if (!outline) {
+        return res.status(400).json({ error: "Outline is required." });
+    }
+
+    try {
+        const prompt = `Using the following outline, generate a complete and detailed blog post:
+        ${outline}`;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4", // Switch to GPT-4
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 5000, // Increase the token limit
+            temperature: 0.7,
+        });
+
+        const draft = response.choices[0].message.content.trim();
+        res.status(200).json({ draft });
+    } catch (error) {
+        console.error("Error generating draft:", error);
+        res.status(500).json({ error: "An error occurred while generating the draft" });
     }
 });
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const OutlineGeneration = ({ keyword, onNext }) => {
@@ -10,16 +11,14 @@ const OutlineGeneration = ({ keyword, onNext }) => {
   const generateOutline = async () => {
     setLoading(true);
     setError('');
-    console.log("Attempting to generate outline...");  // Debugging log
+    console.log("Sending request to generate outline for keyword:", keyword);
 
     try {
-      const response = await axios.post('http://localhost:3000/generate-outline', {
-        topic: keyword,
-      });
-      console.log("Response received:", response.data);  // Debugging log
+      const response = await axios.post('http://localhost:3000/generate-outline', { topic: keyword });
+      console.log("Outline generated:", response.data.outline);
       setOutline(response.data.outline);
     } catch (err) {
-      console.error("Error occurred while generating outline:", err);  // Debugging log
+      console.error("Error generating outline:", err);
       setError('An error occurred while generating the outline. Please try again.');
     } finally {
       setLoading(false);
@@ -27,26 +26,28 @@ const OutlineGeneration = ({ keyword, onNext }) => {
   };
 
   // Run outline generation when the component loads
-  React.useEffect(() => {
-    if (keyword) {
-      console.log("Component loaded with keyword:", keyword);  // Debugging log
-      generateOutline();
-    }
-  }, [keyword]);
+  useEffect(() => {
+    console.log("OutlineGeneration component loaded");
+    generateOutline();
+  }, []);
 
   return (
     <div className="outline-generation-container">
-      <h2>Outline Generation</h2>
+      <h2>Step 2: Outline Generation</h2>
       <p>Keyword: <strong>{keyword}</strong></p>
 
       {loading && <p>Generating outline...</p>}
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      {outline && (
+      {!loading && outline && (
         <div className="outline-result">
           <h3>Generated Outline:</h3>
           <pre>{outline}</pre>
-          <button onClick={() => onNext(outline)}>Looks Good, Proceed</button>
+
+          <div className="button-group">
+            <button onClick={() => onNext(outline)}>Looks Good, Proceed</button>
+            <button onClick={() => alert('Editing not implemented yet')}>Needs Changes</button>
+          </div>
         </div>
       )}
 

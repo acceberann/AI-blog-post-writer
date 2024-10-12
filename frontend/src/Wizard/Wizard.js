@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import KeywordSelection from './KeywordSelection';
 import OutlineGeneration from './OutlineGeneration';
@@ -5,7 +6,7 @@ import BrandVoiceCheck from './BrandVoiceCheck';
 import BlogDraftGeneration from './BlogDraftGeneration';
 import HumanReview from './HumanReview';
 import FinalReview from './FinalReview';
-import PublishAndExport from './PublishAndExport'; // Import PublishAndExport
+import PublishAndExport from './PublishAndExport';
 
 const Wizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -17,15 +18,16 @@ const Wizard = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleNextStep = (data) => {
-    console.log(`Current Step: ${currentStep}, Data:`, data);  // Debugging log to trace step transition
-
+    console.log("Handling next step. Current step:", currentStep, "Data received:", data);
     switch (currentStep) {
       case 1:
         setKeyword(data);
+        console.log("Proceeding to Step 2: Outline Generation");
         setCurrentStep(2);
         break;
       case 2:
         setOutline(data);
+        console.log("Proceeding to Step 3: BrandVoiceCheck with outline:", data);
         setCurrentStep(3);
         break;
       case 3:
@@ -49,6 +51,8 @@ const Wizard = () => {
         break;
     }
   };
+
+  console.log("Current step in wizard:", currentStep);
 
   return (
     <div className="wizard-container">

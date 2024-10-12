@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify'; // Import DOMPurify
@@ -9,6 +10,8 @@ const WizardUI = () => {
   const [outline, setOutline] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState(false); // New state for editing mode
+  const [draft, setDraft] = useState(''); // New state to store the generated draft
 
   const handleKeywordChange = (event) => {
     setKeyword(event.target.value);
@@ -21,6 +24,7 @@ const WizardUI = () => {
     }
     if (currentStep === 1) {
       setLoading(true);
+      console.log("Starting to generate outline for keyword:", keyword);
       generateOutline(keyword);
     }
   };
@@ -30,15 +34,42 @@ const WizardUI = () => {
       const response = await axios.post('http://localhost:3000/generate-outline', {
         topic: keyword,
       });
-      // Sanitize the outline content before setting it
+      console.log("Outline generated:", response.data.outline);
       const sanitizedOutline = DOMPurify.sanitize(response.data.outline);
       setOutline(sanitizedOutline);
       setCurrentStep(2);
     } catch (err) {
       setError('An error occurred while generating the outline. Please try again.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const generateDraft = async (outline) => {
+    console.log("Sending outline to backend to generate draft...");
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:3000/generate-draft', {
+        outline: outline,
+      });
+      console.log("Draft generated:", response.data.draft);
+      setDraft(response.data.draft);
+      setCurrentStep(3); // Move to the draft review step
+    } catch (err) {
+      setError('An error occurred while generating the draft. Please try again.');
+      console.error("Error generating draft:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);  // Enable editing mode
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);  // Save changes and disable editing mode
   };
 
   return (
@@ -66,17 +97,57 @@ const WizardUI = () => {
           {outline ? (
             <div>
               <p>Outline for "{keyword}":</p>
-              <pre dangerouslySetInnerHTML={{ __html: outline }}></pre>
-              <button className="next-button" onClick={() => setCurrentStep(3)}>
-                Looks Good, Proceed
-              </button>
+
+              {/* Conditionally render textarea for editing or pre-formatted outline */}
+              {isEditing ? (
+                <textarea 
+                  value={outline} 
+                  onChange={(e) => setOutline(e.target.value)} 
+                />
+              ) : (
+                <pre dangerouslySetInnerHTML={{ __html: outline }}></pre>
+              )}
+
+              <div className="button-group">
+                {!isEditing ? (
+                  <>
+                    <button className="next-button" onClick={() => {
+                      console.log("Proceeding with outline:", outline);
+                      generateDraft(outline);
+                    }}>
+                      Looks Good, Proceed
+                    </button>
+                    <button className="edit-button" onClick={handleEditClick}>
+                      Needs Changes
+                    </button>
+                  </>
+                ) : (
+                  <button className="save-button" onClick={handleSaveClick}>
+                    Save Outline
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <p>Generating the outline for "{keyword}"...</p>
           )}
         </div>
       )}
-      {/* Additional steps will follow here */}
+      {currentStep === 3 && (
+        <div className="step step-3">
+          <h2>Step 3: Blog Post Draft</h2>
+          {loading ? (
+            <p>Generating the blog post draft...</p>
+          ) : (
+            <div>
+              <pre>{draft}</pre>
+              {/* Additional buttons for review and editing could be added here */}
+            </div>
+          )}
+          {error && <p className="error-message">{error}</p>}
+        </div>
+      )}
+      {/* Additional steps can be added here */}
     </div>
   );
 };

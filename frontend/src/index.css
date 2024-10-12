@@ -19,7 +19,7 @@ h1 {
 .description {
   color: #a0a0a0; /* Description text color */
   font-family: 'Lato', sans-serif; /* Description font */
-  text-align: left; /* Center the description */
+  text-align: left; /* Align text to the left */
   padding: 32px; 
   max-width: 800px;
 }
@@ -137,6 +137,23 @@ h1 {
   background-color: #842ee8;
 }
 
+/* Needs Changes Button Styles */
+.edit-button {
+  background-color: #ff4d4d;
+  color: #ffffff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+  margin-left: 10px;
+}
+
+.edit-button:hover {
+  background-color: #ff6666;
+}
+
 /* Updated Input Box Styles for the Keyword Input */
 .keyword-input {
   background-color: #111111;
@@ -148,4 +165,59 @@ h1 {
   font-family: 'Lato', sans-serif;
   margin-bottom: 20px;
   margin-top: 16px;
+}
+
+/* Outline Result Styles */
+.outline-result {
+  background-color: #333333;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.outline-result h3 {
+  color: #ffffff;
+}
+
+.outline-result pre {
+  color: #a0a0a0;
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+  white-space: pre-wrap; /* Wrap long content */
+}
+
+.outline-result button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #8532fc; /* Button color for visibility */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.outline-result button:hover {
+  background-color: #842ee8; /* Slight color change on hover */
+}
+
+/* Button Group for Outline */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.next-button, .edit-button {
+  padding: 12px 24px;
+  background-color: #8532fc;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Lato', sans-serif;
+}
+
+.next-button:hover, .edit-button:hover {
+  background-color: #842ee8;
 }
