@@ -17,6 +17,8 @@ const Wizard = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleNextStep = (data) => {
+    console.log(`Current Step: ${currentStep}, Data:`, data);  // Debugging log to trace step transition
+
     switch (currentStep) {
       case 1:
         setKeyword(data);

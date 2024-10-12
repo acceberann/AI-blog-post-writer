@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 import './App.css';
 
 const WizardUI = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [keyword, setKeyword] = useState('');
+  const [outline, setOutline] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleKeywordChange = (event) => {
     setKeyword(event.target.value);
@@ -14,7 +19,26 @@ const WizardUI = () => {
       alert('Please enter a keyword to proceed.');
       return;
     }
-    setCurrentStep(currentStep + 1);
+    if (currentStep === 1) {
+      setLoading(true);
+      generateOutline(keyword);
+    }
+  };
+
+  const generateOutline = async (keyword) => {
+    try {
+      const response = await axios.post('http://localhost:3000/generate-outline', {
+        topic: keyword,
+      });
+      // Sanitize the outline content before setting it
+      const sanitizedOutline = DOMPurify.sanitize(response.data.outline);
+      setOutline(sanitizedOutline);
+      setCurrentStep(2);
+    } catch (err) {
+      setError('An error occurred while generating the outline. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,17 +54,29 @@ const WizardUI = () => {
             onChange={handleKeywordChange}
             placeholder="e.g., Digital Marketing Trends"
           />
-          <button className="next-button" onClick={handleNextStep}>Next</button>
+          <button className="next-button" onClick={handleNextStep} disabled={loading}>
+            {loading ? 'Generating Outline...' : 'Next'}
+          </button>
+          {error && <p className="error-message">{error}</p>}
         </div>
       )}
       {currentStep === 2 && (
         <div className="step step-2">
           <h2>Step 2: Outline Generation</h2>
-          <p>Generating the outline for "{keyword}"...</p>
-          {/* Placeholder for outline - future functionality */}
+          {outline ? (
+            <div>
+              <p>Outline for "{keyword}":</p>
+              <pre dangerouslySetInnerHTML={{ __html: outline }}></pre>
+              <button className="next-button" onClick={() => setCurrentStep(3)}>
+                Looks Good, Proceed
+              </button>
+            </div>
+          ) : (
+            <p>Generating the outline for "{keyword}"...</p>
+          )}
         </div>
       )}
-      {/* Add more steps as needed */}
+      {/* Additional steps will follow here */}
     </div>
   );
 };

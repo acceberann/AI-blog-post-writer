@@ -10,13 +10,16 @@ const OutlineGeneration = ({ keyword, onNext }) => {
   const generateOutline = async () => {
     setLoading(true);
     setError('');
+    console.log("Attempting to generate outline...");  // Debugging log
 
     try {
       const response = await axios.post('http://localhost:3000/generate-outline', {
         topic: keyword,
       });
+      console.log("Response received:", response.data);  // Debugging log
       setOutline(response.data.outline);
     } catch (err) {
+      console.error("Error occurred while generating outline:", err);  // Debugging log
       setError('An error occurred while generating the outline. Please try again.');
     } finally {
       setLoading(false);
@@ -25,8 +28,11 @@ const OutlineGeneration = ({ keyword, onNext }) => {
 
   // Run outline generation when the component loads
   React.useEffect(() => {
-    generateOutline();
-  }, []);
+    if (keyword) {
+      console.log("Component loaded with keyword:", keyword);  // Debugging log
+      generateOutline();
+    }
+  }, [keyword]);
 
   return (
     <div className="outline-generation-container">
