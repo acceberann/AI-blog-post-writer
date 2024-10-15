@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify'; // Import DOMPurify
 import './App.css';
@@ -12,6 +11,9 @@ const WizardUI = () => {
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false); // New state for editing mode
   const [draft, setDraft] = useState(''); // New state to store the generated draft
+  const [imagePrompts, setImagePrompts] = useState([]); // State to store image prompts
+  const [suggestions, setSuggestions] = useState(''); // State to store user suggestions for outline
+  const [draftSuggestions, setDraftSuggestions] = useState(''); // State to store user suggestions for draft
 
   const handleKeywordChange = (event) => {
     setKeyword(event.target.value);
@@ -24,7 +26,6 @@ const WizardUI = () => {
     }
     if (currentStep === 1) {
       setLoading(true);
-      console.log("Starting to generate outline for keyword:", keyword);
       generateOutline(keyword);
     }
   };
@@ -46,19 +47,77 @@ const WizardUI = () => {
     }
   };
 
-  const generateDraft = async (outline) => {
-    console.log("Sending outline to backend to generate draft...");
+  const regenerateOutline = async (keyword, suggestions) => {
+    console.log("Regenerating outline based on user suggestions...");
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/generate-draft', {
-        outline: outline,
+      const response = await axios.post('http://localhost:3000/regenerate-outline', {
+        topic: keyword,
+        suggestions: suggestions,
       });
-      console.log("Draft generated:", response.data.draft);
-      setDraft(response.data.draft);
-      setCurrentStep(3); // Move to the draft review step
+      console.log("New outline generated:", response.data.outline);
+      const sanitizedOutline = DOMPurify.sanitize(response.data.outline);
+      setOutline(sanitizedOutline);
+      setIsEditing(false); // Close the editing mode
     } catch (err) {
-      setError('An error occurred while generating the draft. Please try again.');
-      console.error("Error generating draft:", err);
+      setError('An error occurred while generating the new outline. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateDraft = async (outline) => {
+    console.log("Sending outline and topic to backend to generate draft...");
+    setLoading(true);
+    try {
+        const response = await axios.post('http://localhost:3000/generate-draft', {
+            outline: outline,
+            topic: keyword // Pass the keyword as 'topic'
+        });
+        console.log("Draft generated:", response.data.draft);
+        setDraft(response.data.draft);
+        setCurrentStep(3); // Move to the draft review step
+    } catch (err) {
+        setError('An error occurred while generating the draft. Please try again.');
+        console.error("Error generating draft:", err);
+    } finally {
+        setLoading(false);
+    }
+};
+
+  const regenerateDraft = async (outline, draftSuggestions) => {
+    console.log("Regenerating draft based on user suggestions...");
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:3000/regenerate-draft', {
+        outline: outline,
+        suggestions: draftSuggestions,
+      });
+      console.log("New draft generated:", response.data.draft);
+      setDraft(response.data.draft);
+      setIsEditing(false); // Close the editing mode
+    } catch (err) {
+      setError('An error occurred while generating the new draft. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateImagePrompts = async (draft) => {
+    console.log("Generating image prompts based on the blog post draft...");
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:3000/generate-image-prompts', {
+        draft: draft,
+      });
+      console.log("Image prompts generated:", response.data.prompts);
+      setImagePrompts(response.data.prompts);
+      setCurrentStep(4); // Move to the image prompts review step
+    } catch (err) {
+      setError('An error occurred while generating image prompts. Please try again.');
+      console.error("Error generating image prompts:", err);
     } finally {
       setLoading(false);
     }
@@ -98,12 +157,17 @@ const WizardUI = () => {
             <div>
               <p>Outline for "{keyword}":</p>
 
-              {/* Conditionally render textarea for editing or pre-formatted outline */}
               {isEditing ? (
-                <textarea 
-                  value={outline} 
-                  onChange={(e) => setOutline(e.target.value)} 
-                />
+                <div>
+                  <textarea 
+                    value={suggestions} 
+                    onChange={(e) => setSuggestions(e.target.value)} 
+                    placeholder="Provide your suggestions for improving the outline"
+                  />
+                  <button onClick={() => regenerateOutline(keyword, suggestions)}>
+                    Submit Suggestions and Generate New Outline
+                  </button>
+                </div>
               ) : (
                 <pre dangerouslySetInnerHTML={{ __html: outline }}></pre>
               )}
@@ -111,10 +175,7 @@ const WizardUI = () => {
               <div className="button-group">
                 {!isEditing ? (
                   <>
-                    <button className="next-button" onClick={() => {
-                      console.log("Proceeding with outline:", outline);
-                      generateDraft(outline);
-                    }}>
+                    <button className="next-button" onClick={() => generateDraft(outline)}>
                       Looks Good, Proceed
                     </button>
                     <button className="edit-button" onClick={handleEditClick}>
@@ -141,7 +202,51 @@ const WizardUI = () => {
           ) : (
             <div>
               <pre>{draft}</pre>
-              {/* Additional buttons for review and editing could be added here */}
+
+              {isEditing ? (
+                <div>
+                  <textarea
+                    value={draftSuggestions}
+                    onChange={(e) => setDraftSuggestions(e.target.value)}
+                    placeholder="Provide your suggestions for improving the draft"
+                  />
+                  <button onClick={() => regenerateDraft(outline, draftSuggestions)}>
+                    Submit Suggestions and Regenerate Draft
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <button className="next-button" onClick={() => generateImagePrompts(draft)}>
+                    Approve and Generate Image Prompts
+                  </button>
+                  <button className="edit-button" onClick={handleEditClick}>
+                    Needs Changes
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {error && <p className="error-message">{error}</p>}
+        </div>
+      )}
+      {currentStep === 4 && (
+        <div className="step step-4">
+          <h2>Step 4: Image Prompts</h2>
+          {loading ? (
+            <p>Generating image prompts...</p>
+          ) : (
+            <div>
+              <ul>
+                {imagePrompts.map((prompt, index) => (
+                  <li key={index}>{prompt}</li>
+                ))}
+              </ul>
+              <button className="next-button" onClick={() => setCurrentStep(5)}>
+                Approve Prompts
+              </button>
+              <button className="edit-button" onClick={() => generateImagePrompts(draft)}>
+                Request New Prompts
+              </button>
             </div>
           )}
           {error && <p className="error-message">{error}</p>}

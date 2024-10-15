@@ -102,12 +102,12 @@ app.post('/generate-outline', async (req, res) => {
 
     try {
         // Create a prompt to generate the blog outline based on the provided topic
-        const prompt = `Create a detailed blog outline on the topic of "${topic}". The outline should include multiple sections, subsections, and points to cover the topic thoroughly. Structure it using Roman numerals (I, II, III, etc.) for main sections, capital letters (A, B, C, etc.) for subsections, and numbers (1, 2, 3, etc.) for finer details.`;
+        const prompt = `Create a comprehensive blog outline on the topic of '${topic}'. The outline should include a clear introduction, multiple detailed sections and subsections, and a conclusion. Each section should build logically, covering the key points necessary to give a thorough explanation. Structure the outline using Roman numerals (I, II, III, etc.) for main sections, capital letters (A, B, C, etc.) for subsections, and numbers (1, 2, 3, etc.) for supporting details. Ensure the outline is well-balanced and complete enough for a long-form blog post.`;
 
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4",
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 1500,
+            max_tokens: 5000,
             temperature: 0.7,
         });
 
@@ -119,16 +119,43 @@ app.post('/generate-outline', async (req, res) => {
     }
 });
 
-app.post('/generate-draft', async (req, res) => {
-    const { outline } = req.body;
+app.post('/regenerate-outline', async (req, res) => {
+    const { topic, suggestions } = req.body;
 
-    if (!outline) {
-        return res.status(400).json({ error: "Outline is required." });
+    if (!topic || !suggestions) {
+        return res.status(400).json({ error: "Both topic and suggestions are required." });
     }
 
     try {
-        const prompt = `Using the following outline, generate a complete and detailed blog post:
-        ${outline}`;
+        const prompt = `Based on the topic "${topic}", and using the following user suggestions:
+        ${suggestions}
+        
+        Generate a refined blog post outline. The outline should include the provided '${suggestions}'to create an outline with a clear introduction, multiple detailed sections and subsections, and a conclusion. Each section should build logically, covering the key points necessary to give a thorough explanation. Structure the outline using Roman numerals (I, II, III, etc.) for main sections, capital letters (A, B, C, etc.) for subsections, and numbers (1, 2, 3, etc.) for supporting details. Ensure the outline is well-balanced and complete enough for a long-form blog post.`;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 5000,
+            temperature: 0.7,
+        });
+
+        const newOutline = response.choices[0].message.content.trim();
+        res.status(200).json({ outline: newOutline });
+    } catch (error) {
+        console.error("Error generating new outline:", error);
+        res.status(500).json({ error: "An error occurred while generating the new outline." });
+    }
+});
+
+app.post('/generate-draft', async (req, res) => {
+    const { outline, topic } = req.body;
+
+    if (!outline || !topic) {
+        return res.status(400).json({ error: "Both outline and topic are required." });
+    }
+
+    try {
+        const prompt = `Using the following outline, write a full, detailed blog post. Each section should be expanded with engaging content, including clear explanations, examples, and, where applicable, relevant stories or case studies. Ensure smooth transitions between sections and paragraphs, making the post easy to read and cohesive. The post should have a narrative style that maintains the reader’s interest. In addition, optimize the post for search by incorporating the topic '${topic}' and important semantic keywords associated with it. Ensure the post is structured logically, flowing from introduction to conclusion, and keep the tone professional but approachable. Outline: ${outline}`;
 
         const response = await openai.chat.completions.create({
             model: "gpt-4", // Switch to GPT-4
@@ -142,6 +169,66 @@ app.post('/generate-draft', async (req, res) => {
     } catch (error) {
         console.error("Error generating draft:", error);
         res.status(500).json({ error: "An error occurred while generating the draft" });
+    }
+});
+
+app.post('/regenerate-draft', async (req, res) => {
+    const { outline, suggestions } = req.body;
+
+    if (!outline || !suggestions) {
+        return res.status(400).json({ error: "Both outline and suggestions are required." });
+    }
+
+    try {
+        const prompt = `Using the following outline:
+        ${outline}
+        
+        And these user suggestions:
+        ${suggestions}
+        
+        Generate a refined blog post draft.`;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 5000, // Adjust based on desired length
+            temperature: 0.7,
+        });
+
+        const newDraft = response.choices[0].message.content.trim();
+        res.status(200).json({ draft: newDraft });
+    } catch (error) {
+        console.error("Error generating new draft:", error);
+        res.status(500).json({ error: "An error occurred while generating the new draft." });
+    }
+});
+
+app.post('/generate-image-prompts', async (req, res) => {
+    const { draft } = req.body;
+
+    if (!draft) {
+        return res.status(400).json({ error: "Draft is required." });
+    }
+
+    try {
+        // Create a prompt to generate 5 image ideas based on the draft
+        const prompt = `Using the following blog post, generate 5 different creative image ideas that could be used as featured images or internal blog post images:
+        ${draft}
+        
+        Each image prompt should be clear and specific, providing enough details for an artist or AI model to create the image.`;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 5000, // Enough space for 5 prompts
+            temperature: 0.7,
+        });
+
+        const imagePrompts = response.choices[0].message.content.trim().split("\n").filter(Boolean);
+        res.status(200).json({ prompts: imagePrompts });
+    } catch (error) {
+        console.error("Error generating image prompts:", error);
+        res.status(500).json({ error: "An error occurred while generating the image prompts" });
     }
 });
 
