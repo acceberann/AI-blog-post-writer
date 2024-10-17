@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
 import Sidebar from './Sidebar';
 import './App.css';
 
 const WizardUI = () => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // Updated to start from the brand voice step
   const [keyword, setKeyword] = useState('');
   const [outline, setOutline] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,14 +15,39 @@ const WizardUI = () => {
   const [imagePrompts, setImagePrompts] = useState([]);
   const [suggestions, setSuggestions] = useState('');
   const [draftSuggestions, setDraftSuggestions] = useState('');
+  const [brandVoiceQuestion, setBrandVoiceQuestion] = useState('');
+  const [brandVoiceAnswer, setBrandVoiceAnswer] = useState('');
+  const [brandVoiceProfileComplete, setBrandVoiceProfileComplete] = useState(false);
 
-  // Define progress based on the current step (there are 5 steps)
-  const getProgress = () => {
-    return `${(currentStep / 5) * 100}%`;
+  useEffect(() => {
+    if (currentStep === 0) {
+      getBrandVoiceQuestion();
+    }
+  }, [currentStep]);
+
+  // Fetch the next brand voice question from the backend
+  const getBrandVoiceQuestion = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/create-brand-voice', {
+        answer: brandVoiceAnswer, // Send the previous answer
+      });
+      if (response.data.message) {
+        setBrandVoiceProfileComplete(true);
+      } else {
+        setBrandVoiceQuestion(response.data.question);
+        setBrandVoiceAnswer(''); // Reset the input for the next question
+      }
+    } catch (err) {
+      setError('An error occurred while creating the brand voice profile. Please try again.');
+    }
   };
 
-  const handleKeywordChange = (event) => {
-    setKeyword(event.target.value);
+  const handleBrandVoiceAnswerSubmit = () => {
+    if (brandVoiceAnswer.trim() === '') {
+      alert('Please provide an answer before proceeding.');
+      return;
+    }
+    getBrandVoiceQuestion(); // Send the answer and get the next question
   };
 
   const handleNextStep = () => {
@@ -130,7 +155,7 @@ const WizardUI = () => {
           <span className="progress-text">Progress:</span>
           <div className="progress-bar-container">
             <div className="progress-bar">
-              <div className="progress-bar-fill" style={{ width: getProgress() }} />
+              <div className="progress-bar-fill" style={{ width: `${(currentStep / 5) * 100}%` }} />
             </div>
           </div>
         </div>
@@ -139,6 +164,38 @@ const WizardUI = () => {
       <div className="wizard-container">
         <Sidebar currentStep={currentStep} />
         <div className="main-content">
+          {currentStep === 0 && (
+            <div className="step step-0">
+              <h2>Welcome to the Blog Post Generator</h2>
+              <p>To get started, we will establish your brand voice profile so that all of your blog posts are written in your unique brand voice. You will be presented with a series of questions to dial in the tone and style of the writing. It is important that you answer them as thoroughly as possible.</p>
+              <h3>Question:</h3>
+              {!brandVoiceProfileComplete ? (
+                <>
+                  <p>{brandVoiceQuestion}</p>
+                  <input
+                    type="text"
+                    className="answer-input"
+                    value={brandVoiceAnswer}
+                    onChange={(e) => setBrandVoiceAnswer(e.target.value)}
+                    placeholder="Enter your answer"
+                  />
+                  <button className="next-button" onClick={handleBrandVoiceAnswerSubmit} disabled={loading}>
+                    {loading ? 'Saving Answer...' : 'Next Question'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>Your brand voice profile has been completed. Let's move on to generating your blog post!</p>
+                  <button className="next-button" onClick={() => setCurrentStep(1)}>
+                    Proceed to Keyword Input
+                  </button>
+                </>
+              )}
+              {error && <p className="error-message">{error}</p>}
+            </div>
+          )}
+
+          {/* Existing Steps */}
           {currentStep === 1 && (
             <div className="step step-1">
               <h2>Step 1: Keyword Selection</h2>
@@ -147,7 +204,7 @@ const WizardUI = () => {
                 type="text"
                 className="keyword-input"
                 value={keyword}
-                onChange={handleKeywordChange}
+                onChange={(e) => setKeyword(e.target.value)}
                 placeholder="e.g., Digital Marketing Trends"
               />
               <button className="next-button" onClick={handleNextStep} disabled={loading}>

@@ -23,15 +23,14 @@ app.use(cors());
 app.use(express.json());
 
 // Store for brand voice profile data
-let brandVoiceProfile = null;
-
+let brandVoiceProfile = null; // To store brand voice profile data
 const questions = [
     "What is the name of your brand?",
-    "How would you describe the core personality traits of the brand (e.g., friendly, professional, innovative)?",
-    "What tone of voice do you aim to maintain in your communications (e.g., formal, informal, conversational)?",
-    "What is the point of view the author of your content should take (e.g., first person, third person)?",
-    "What are the key messages or themes that should always be conveyed in your brand's communication?",
-    "Who is the primary audience for your brand? Describe the demographic and psychographic characteristics.",
+    "How would you describe the core personality traits of the brand, such as friendly, professional, innovative, traditional, authoritative, playful, compassionate, etc.?",
+    "What tone of voice do you aim to maintain in your communications? (e.g., formal, informal, conversational, technical, educational, etc. This helps in adjusting the level of formality and approachability in the communication.)",
+    "What is the point of view the author of your content should take? (first person, third person, singular, plural, etc.)",
+    "What are the key messages or themes that should always be conveyed in your brand's communication? List the key messages that could include unique value propositions, taglines, or important thematic elements.",
+    "Who is the primary audience for your brand? Define the primary demographic and psychographic characteristics of the audience the brand aims to engage, such as age group, professional background, interests, and emotional drivers.",
     "Are there any specific terms, phrases, or jargon your brand uses that should be included in communications?"
 ];
 
@@ -41,7 +40,7 @@ let currentQuestionIndex = 0;
 app.post('/create-brand-voice', (req, res) => {
     const userResponse = req.body.answer;
 
-    // Initialize brand voice profile data if starting fresh
+    // Initialize brand voice profile if starting fresh
     if (!brandVoiceProfile) {
         brandVoiceProfile = {
             brandName: '',
@@ -54,7 +53,7 @@ app.post('/create-brand-voice', (req, res) => {
         };
     }
 
-    // Store the user's answer to the current question
+    // Store user's answer to the current question
     if (currentQuestionIndex > 0) {
         switch (currentQuestionIndex) {
             case 1:
@@ -81,12 +80,11 @@ app.post('/create-brand-voice', (req, res) => {
         }
     }
 
-    // If all questions have been asked, send confirmation to the user
+    // If all questions are answered, send confirmation and reset the index
     if (currentQuestionIndex >= questions.length) {
-        currentQuestionIndex = 0; // Reset for the next user
-        res.status(200).json({ message: "Brand voice profile has been successfully created and stored!" });
+        currentQuestionIndex = 0;
+        res.status(200).json({ message: "Brand voice profile successfully created and stored!" });
     } else {
-        // Send the next question to the user
         currentQuestionIndex++;
         res.status(200).json({ question: questions[currentQuestionIndex - 1] });
     }
