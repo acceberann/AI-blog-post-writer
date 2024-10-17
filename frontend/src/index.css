@@ -2,222 +2,189 @@
 
 /* General Page Styles */
 body {
-  background-color: #111111; /* Background color */
-  font-family: 'Lato', sans-serif; /* Default body font */
-  color: #a0a0a0; /* Body text color */
+  background-color: #111111;
+  font-family: 'Lato', sans-serif;
+  color: #a0a0a0;
   margin: 0;
-  padding: 64px; /* Page padding */
+  padding: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-h1 {
-  color: #ffffff; /* Header color */
-  font-family: 'Raleway', sans-serif; /* Header font */
-  text-align: center; /* Center the header */
-  margin-bottom: 32px; /* Margin under the header */
-}
-
-.description {
-  color: #a0a0a0; /* Description text color */
-  font-family: 'Lato', sans-serif; /* Description font */
-  text-align: left; /* Align text to the left */
-  padding: 32px; 
-  max-width: 800px;
+/* Card Container */
+.card-container {
+  background-color: #222222;
+  border-radius: 10px;
+  max-width: 1600px;
+  width: 100%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  box-sizing: border-box;
 }
 
 /* Wizard Container Styles */
 .wizard-container {
-  width: 80%;
-  max-width: 800px;
-  margin: 0 auto; /* Center the wizard container */
   display: flex;
-  flex-direction: column;
-  padding: 32px;
-  background-color: #222222; /* Darker background for container */
-  border-radius: 8px; /* Rounded corners */
-  text-align: left; /* Left justify content */
+  max-width: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  flex-shrink: 0;
+  border-radius: 7px;
+}
+
+/* Sidebar List Styles */
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px 0;
+}
+
+.sidebar li.active {
+  font-weight: bold;
+  color: #8532fc;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 20px;
+  background-color: #2c2c2c;
+  border-radius: 8px;
 }
 
 /* Input Box Styles */
-.input-box {
-  background-color: #111111;
-  color: #ffffff;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px; /* Rounded corners on input */
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  margin-bottom: 20px;
-}
-
-/* Button Styles */
-.button {
-  padding: 15px 30px; /* Padding for a wider button */
-  background-color: #8532fc; /* Button color */
-  color: white;
-  border: none;
-  border-radius: 8px; /* Rounded corners on button */
-  cursor: pointer;
-  font-size: 18px;
-  font-family: 'Lato', sans-serif;
-  margin-left: 10px; /* Margin to add spacing between elements */
-}
-
-.button:hover {
-  background-color: #842ee8; /* Hover color for button */
-}
-
-/* Navigation Styles */
-.nav-button {
-  padding: 10px 20px;
-  background-color: #333333;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  margin: 10px 5px;
-}
-
-.nav-button:hover {
-  background-color: #555555;
-}
-
-/* Progress Indicator Styles */
-.progress-indicator {
-  color: #a0a0a0;
-  font-family: 'Lato', sans-serif;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-/* Styling for Error Messages */
-.error-message {
-  color: #ff4d4d;
-  font-size: 14px;
-  font-family: 'Lato', sans-serif;
-  margin-top: 10px;
-  text-align: center;
-}
-
-/* Header Styles */
-.app-header {
-  text-align: center;
-  padding: 40px 20px;
-  background-color: #222222;
-  color: #ffffff;
-  font-family: 'Raleway', sans-serif;
-  font-size: 28px;
-  border-bottom: 1px solid #444444;
-}
-
-/* General Container Styles */
-.general-container {
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #222222;
-  border-radius: 10px;
-  max-width: 800px;
-}
-
-/* Next Button Styles */
-.next-button {
-  background-color: #8532fc;
-  color: #ffffff;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  margin-left: 10px;
-}
-
-.next-button:hover {
-  background-color: #842ee8;
-}
-
-/* Needs Changes Button Styles */
-.edit-button {
-  background-color: #ff4d4d;
-  color: #ffffff;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  margin-left: 10px;
-}
-
-.edit-button:hover {
-  background-color: #ff6666;
-}
-
-/* Updated Input Box Styles for the Keyword Input */
 .keyword-input {
   background-color: #111111;
   color: #ffffff;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px; /* Rounded corners on input */
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  margin-bottom: 20px;
-  margin-top: 16px;
-}
-
-/* Outline Result Styles */
-.outline-result {
-  background-color: #333333;
-  padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;
-}
-
-.outline-result h3 {
-  color: #ffffff;
-}
-
-.outline-result pre {
-  color: #a0a0a0;
   font-size: 16px;
-  font-family: 'Lato', sans-serif;
-  white-space: pre-wrap; /* Wrap long content */
+  width: 300px;
+  max-width: 600px;
+  margin-bottom: 20px;
+  margin-right: 32px;
 }
 
-.outline-result button {
-  margin: 10px;
-  padding: 10px;
-  background-color: #8532fc; /* Button color for visibility */
+/* Button Styles */
+.next-button, .edit-button {
+  padding: 15px 40px;
+  background-color: #8532fc;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-}
-
-.outline-result button:hover {
-  background-color: #842ee8; /* Slight color change on hover */
-}
-
-/* Button Group for Outline */
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.next-button, .edit-button {
-  padding: 12px 24px;
-  background-color: #8532fc;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Lato', sans-serif;
+  font-size: 18px;
 }
 
 .next-button:hover, .edit-button:hover {
   background-color: #842ee8;
+}
+
+.save-button {
+  background-color: #8532fc;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.save-button:hover {
+  background-color: #842ee8;
+}
+
+/* Error Messages */
+.error-message {
+  color: #ff4d4d;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Preformatted Text */
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Textarea Styles */
+textarea {
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Card Styling */
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #444;
+  padding-top: 20px;
+  width: 100%;
+}
+
+/* Progress Bar Container */
+.progress-container {
+  display: flex; /* Ensure the progress bar and text are on the same line */
+  align-items: center; /* Vertically align text and bar */
+  justify-content: flex-start; /* Align everything to the left */
+  width: 100%;  /* Take up full width of the container */
+}
+
+.progress-text {
+  color: white;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  width: 100%;  /* Ensure the container takes up the full width */
+  max-width: none;  /* No width limits */
+}
+
+.progress-bar {
+  width: 100%;  /* Ensure the progress bar itself takes up the full width */
+  height: 10px;
+  background-color: #333333;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background-color: #8532fc;
+  height: 100%;
+  width: 0%;  /* Default to 0%, will be updated dynamically */
+  border-radius: 5px;
+  transition: width 0.5s ease;
 }
